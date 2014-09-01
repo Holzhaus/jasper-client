@@ -1,5 +1,6 @@
 [Core]
 Name = Pocketsphinx STT
+Slug = pocketsphinx-stt
 Module = pocketsphinx-stt
 
 [Documentation]

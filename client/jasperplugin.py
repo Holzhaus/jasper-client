@@ -1,8 +1,10 @@
-import imp
 import logging
+logger = logging.getLogger(__name__)
+
+import imp
 from distutils.spawn import find_executable
 import ConfigParser as configparser
-logger = logging.getLogger(__name__)
+
 
 import plugintypes
 from yapsy.PluginManager import PluginManager
@@ -17,6 +19,17 @@ class JasperPluginInfo(PluginInfo):
 
     def __init__(self, plugin_name, plugin_path):
         super(JasperPluginInfo, self).__init__(plugin_name, plugin_path)
+
+
+    @property
+    def slug(self):
+        try:
+            value = self.details.get('Documentation','Slug')
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            # FIXME: We should probably use the slugify module here
+            value = self.name.lower().replace(' ','-')
+        return value
+
 
     @property
     def priority(self):
