@@ -1,0 +1,13 @@
+[Core]
+Name = Google STT
+Module = google-stt
+
+[Documentation]
+Author = Andrew Stahlman
+Version = 0.1
+Website = http://jasperproject.github.io
+Description = Speech-To-Text implementation which relies on the Google Speech API.
+
+[Dependencies]
+JasperVersion = 2.0.0
+Network = True

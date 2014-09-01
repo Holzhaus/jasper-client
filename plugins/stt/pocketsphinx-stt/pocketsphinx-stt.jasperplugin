@@ -1,0 +1,13 @@
+[Core]
+Name = Pocketsphinx STT
+Module = pocketsphinx-stt
+
+[Documentation]
+Author = Charles Marsh, Shubhro Saha
+Version = 0.1
+Website = http://jasperproject.github.io
+Description = The default Speech-To-Text implementation which relies on PocketSphinx.
+
+[Dependencies]
+JasperVersion = 2.0.0
+Modules = pocketsphinx
