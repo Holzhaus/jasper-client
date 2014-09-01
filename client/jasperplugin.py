@@ -1,6 +1,4 @@
 import imp
-import inspect
-import os.path
 import logging
 from distutils.spawn import find_executable
 import ConfigParser as configparser
@@ -19,7 +17,7 @@ class JasperPluginInfo(PluginInfo):
 
     def __init__(self, plugin_name, plugin_path):
         super(JasperPluginInfo, self).__init__(plugin_name, plugin_path)
-    
+
     @property
     def priority(self):
         try:
