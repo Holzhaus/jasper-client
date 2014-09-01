@@ -20,7 +20,6 @@ class JasperPluginInfo(PluginInfo):
     def __init__(self, plugin_name, plugin_path):
         super(JasperPluginInfo, self).__init__(plugin_name, plugin_path)
 
-
     @property
     def slug(self):
         try:
@@ -29,7 +28,6 @@ class JasperPluginInfo(PluginInfo):
             # FIXME: We should probably use the slugify module here
             value = self.name.lower().replace(' ','-')
         return value
-
 
     @property
     def priority(self):
