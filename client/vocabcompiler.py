@@ -272,6 +272,89 @@ class PocketsphinxVocabulary(AbstractVocabulary):
             for line in lines:
                 f.write("%s\n" % line)
 
+import subprocess
+class JuliusVocabulary(AbstractVocabulary):
+
+    PATH_PREFIX = 'julius-vocabulary'
+
+    @property
+    def dfa_file(self):
+        """
+        Returns:
+            The path of the the julius dfa file as string
+        """
+        return os.path.join(self.path, 'dfa')
+
+    @property
+    def dict_file(self):
+        """
+        Returns:
+            The path of the the julius dict file as string
+        """
+        return os.path.join(self.path, 'dict')
+
+    @property
+    def is_compiled(self):
+        return super(self.__class__, self).is_compiled and os.access(self.dfa_file, os.R_OK) and os.access(self.dict_file, os.R_OK)
+
+    def _get_grammar(self, phrases):
+        return {'S': [['NS_B','WORD_LOOP', 'NS_E']],
+                'WORD_LOOP': [['WORD_LOOP','WORD'], ['WORD']]}
+
+    def _get_word_defs(self, phrases):
+        word_defs = {'NS_B': [('<s>', 'sil')],
+                     'NS_E': [('<s>', 'sil')],
+                     'WORD': []}
+
+        words = []
+        for phrase in phrases:
+            if ' ' in phrase:
+                for word in phrase.split(' '):
+                    words.append(word)
+            else:
+                words.append(phrase)
+
+        for word in words:
+            word_defs['WORD'].append((word, g2p.translateWord(word)))
+        return word_defs
+
+    def _compile_vocabulary(self, phrases):
+        prefix = 'jasper'
+        tmpdir = tempfile.mkdtemp()
+
+        # Create grammar file
+        tmp_grammar_file = os.path.join(tmpdir, os.extsep.join([prefix, 'grammar']))
+        with open(tmp_grammar_file, 'w') as f:
+            grammar = self._get_grammar(phrases)
+            for definition in grammar.pop('S'):
+                f.write("%s: %s\n" % ('S', ' '.join(definition)))
+            for name, definitions in grammar.items():
+                for definition in definitions:
+                    f.write("%s: %s\n" % (name, ' '.join(definition)))
+
+        # Create voca file
+        tmp_voca_file = os.path.join(tmpdir, os.extsep.join([prefix, 'voca']))
+        with open(tmp_voca_file, 'w') as f:
+            for category, words in self._get_word_defs(phrases).items():
+                f.write("%% %s\n" % category)
+                for word, phoneme in words:
+                    f.write("%s\t\t\t%s\n" % (word, phoneme))
+
+        # mkdfa.pl
+        olddir = os.getcwd()
+        os.chdir(tmpdir)
+        cmd = ['mkdfa.pl', str(prefix)]
+        subprocess.call(cmd)
+        os.chdir(olddir)
+
+        tmp_dfa_file = os.path.join(tmpdir, os.extsep.join([prefix, 'dfa']))
+        tmp_dict_file = os.path.join(tmpdir, os.extsep.join([prefix, 'dict']))
+        shutil.move(tmp_dfa_file, self.dfa_file)
+        shutil.move(tmp_dict_file, self.dict_file)
+
+        shutil.rmtree(tmpdir) 
+
+
 def get_phrases_from_module(module):
     """
     Gets phrases from a module.
