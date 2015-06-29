@@ -9,13 +9,16 @@ Here is a probably incomplete list of contributors, that helped to improve
 Jasper. Thanks a lot!
 
     Alex Bate <alex@alexbate.co.uk>
+    albrnick
     Andy Buckingham <andy@andybee.com>
     David Celis <me@davidcel.is>
     Cedric Claidiere
     dag0310
+    Steven Hiscocks <steven@hiscocks.me.uk>
     Alex Siri
     Andrew Stahlman <andrew.stahlman@gmail.com>
     James Timmons
+    x-hamiltonian
 
 *Please alphabetize new entries*
 
