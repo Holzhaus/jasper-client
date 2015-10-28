@@ -4,7 +4,8 @@ import tempfile
 import wave
 import mad
 import jasperpath
-import vocabcompiler
+from . import vocabcompiler
+from . import i18n
 
 
 class GenericPlugin(object):
@@ -22,31 +23,13 @@ class GenericPlugin(object):
         return self._plugin_info
 
 
-class SpeechHandlerPlugin(GenericPlugin):
+class SpeechHandlerPlugin(GenericPlugin, i18n.GettextMixin):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, *args, **kwargs):
         GenericPlugin.__init__(self, *args, **kwargs)
-
-        # Test if language is supported and raise error if not
-        self._get_translations()
-
-    def _get_translations(self):
-        try:
-            language = self.profile['language']
-        except KeyError:
-            language = 'en-US'
-
-        if language not in self._plugin_info.translations:
-            raise ValueError('Unsupported Language!')
-
-        return self._plugin_info.translations[language]
-
-    def gettext(self, *args, **kwargs):
-        return self._get_translations().gettext(*args, **kwargs)
-
-    def ngettext(self, *args, **kwargs):
-        return self._get_translations().ngettext(*args, **kwargs)
+        i18n.GettextMixin.__init__(
+            self, self.info.translations, self.profile)
 
     @abc.abstractmethod
     def get_phrases(self):
